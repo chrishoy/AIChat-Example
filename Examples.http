@@ -1,0 +1,9 @@
+@Server_HostAddress = https://localhost:7024
+
+
+
+
+# Sample request to get weather information scaffolded on project creation
+GET {{Server_HostAddress}}/weather/
+Accept: application/json
+###

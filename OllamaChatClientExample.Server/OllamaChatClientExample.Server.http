@@ -1,6 +1,0 @@
-@OllamaChatClientExample.Server_HostAddress = http://localhost:5167
-
-GET {{OllamaChatClientExample.Server_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
