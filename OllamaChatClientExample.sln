@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35828.75 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "ollamachatclientexample.client", "ollamachatclientexample.client\ollamachatclientexample.client.esproj", "{430CA782-182E-8A3B-C207-A030C51C823E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaChatClientExample.Server", "OllamaChatClientExample.Server\OllamaChatClientExample.Server.csproj", "{A14A5952-3D5D-4D89-9648-34A954F59D38}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{430CA782-182E-8A3B-C207-A030C51C823E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{430CA782-182E-8A3B-C207-A030C51C823E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{430CA782-182E-8A3B-C207-A030C51C823E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{430CA782-182E-8A3B-C207-A030C51C823E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{430CA782-182E-8A3B-C207-A030C51C823E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{430CA782-182E-8A3B-C207-A030C51C823E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A14A5952-3D5D-4D89-9648-34A954F59D38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A14A5952-3D5D-4D89-9648-34A954F59D38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A14A5952-3D5D-4D89-9648-34A954F59D38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A14A5952-3D5D-4D89-9648-34A954F59D38}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {173D3759-A060-4498-B516-CF19BE657502}
+	EndGlobalSection
+EndGlobal
