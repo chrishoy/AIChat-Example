@@ -1,4 +1,4 @@
-﻿namespace OllamaChatClientExample.Server.Models;
+﻿namespace OllamaChatClientExample.Server.Weather;
 
 public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {

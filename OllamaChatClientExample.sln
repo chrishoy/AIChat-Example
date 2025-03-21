@@ -7,16 +7,25 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "ollamachatclientexample.cli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaChatClientExample.Server", "OllamaChatClientExample.Server\OllamaChatClientExample.Server.csproj", "{A14A5952-3D5D-4D89-9648-34A954F59D38}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Solution Items", "1. Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Http", "Http", "{4EB0CE0F-BB7D-445C-838F-11EAB3F30C86}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Http", "3. Http", "{4EB0CE0F-BB7D-445C-838F-11EAB3F30C86}"
 	ProjectSection(SolutionItems) = preProject
 		Examples.http = Examples.http
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Docker", "2. Docker", "{361A6AAE-8FCE-48CB-BF3A-F31DC6FFDCB4}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Client", "4. Client", "{6A0F4085-87E1-4552-8321-47397D0697CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5. Server", "5. Server", "{64B962F8-3FE6-4E8B-A753-187242910C4C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +46,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{430CA782-182E-8A3B-C207-A030C51C823E} = {6A0F4085-87E1-4552-8321-47397D0697CD}
+		{A14A5952-3D5D-4D89-9648-34A954F59D38} = {64B962F8-3FE6-4E8B-A753-187242910C4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {173D3759-A060-4498-B516-CF19BE657502}

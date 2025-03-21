@@ -1,0 +1,34 @@
+# Docker compose file for Ollama using persistent volume
+services:
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:latest
+    restart: always
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama_data:/root/.ollama
+
+  redis:
+    image: "redis:alpine"  # Lightweight Redis image
+    container_name: "redis_container"
+    ports:
+      - "6379:6379"  # Expose Redis port to localhost
+    restart: always
+    volumes:
+      - redis_data:/data  # Persist Redis data
+
+volumes:
+  ollama_data:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "D:/Docker/Volumes/Ollama/data" # Change this to your own physical path
+
+  redis_data:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "D:/Docker/Volumes/Redis/data" # Change this to your own physical path

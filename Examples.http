@@ -1,7 +1,50 @@
 @Server_HostAddress = https://localhost:7024
 
+# Get OpenApi specification
+GET {{Server_HostAddress}}/openapi/v1.json
+Accept: application/json
+###
 
+# 1. Start a chat - Returns the id of the chat for subsequent requests
 
+# @name chat
+POST {{Server_HostAddress}}/chat
+Accept: */*
+Content-Type: application/json 
+{
+  "message": "What is the answer to everything?"
+}
+###
+
+# 2. Get last chat response - If awaiting response, this will return 'Still thinking...'
+GET {{Server_HostAddress}}/chat/{{chat.response.body.$.id}}
+Accept: */*
+Content-Type: application/json 
+###
+
+# 3. Chat with continuation
+POST {{Server_HostAddress}}/chat/{{chat.response.body.$.id}}
+Accept: */*
+Content-Type: application/json 
+{
+  "message": "Summarise in less than 50 words"
+}
+###
+
+# 4. Chat with continuation
+POST {{Server_HostAddress}}/chat/{{chat.response.body.$.id}}
+Accept: */*
+Content-Type: application/json 
+{
+  "message": "And in Spanish"
+}
+###
+
+# 5. Clear specified chat
+GET {{Server_HostAddress}}/chat/clear/{{chat.response.body.$.id}}
+Accept: */*
+Content-Type: application/json 
+###
 
 # Sample request to get weather information scaffolded on project creation
 GET {{Server_HostAddress}}/weather/

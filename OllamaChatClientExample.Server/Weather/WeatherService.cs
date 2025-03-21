@@ -1,6 +1,4 @@
-﻿using OllamaChatClientExample.Server.Models;
-
-namespace OllamaChatClientExample.Server.Services;
+﻿namespace OllamaChatClientExample.Server.Weather;
 
 public sealed class WeatherService: IWeatherService
 {
@@ -20,9 +18,4 @@ public sealed class WeatherService: IWeatherService
             .ToArray()
             );
     }
-}
-
-public interface IWeatherService
-{
-    Task<WeatherForecast[]> GetForecast();
 }
