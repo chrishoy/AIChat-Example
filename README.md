@@ -6,7 +6,7 @@ Simple .NET 9 chat client/api example that demonstrates how to use the `Ollama` 
 ### Getting Started
 - `docker-compose up -d` to pull and start `Ollama` and `Redis` docker containers.
 - `docker exec -it ollama ollama pull llama3` to pull the `llama3` model into the `Ollama` container (this will take a while).
-- Use the examples in Examples.http
+- Use the examples in `Examples.http`
 
 ### Things to Beware
 - We are using `Redis` to store chat history, and this has been 'abused' to provide minimal orchestration of requests.
