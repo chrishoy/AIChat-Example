@@ -11,8 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-//builder.Services.AddChatClient(new OllamaChatClient(new Uri("http://localhost:11434"), "llama3"));
-builder.Services.AddChatClient(new ChatClientEmulator());
+builder.Services.AddChatClient(new OllamaChatClient(new Uri("http://localhost:11434"), "llama3"));
+//builder.Services.AddChatClient(new ChatClientEmulator());
 
 builder.Services.AddSingleton<IWeatherService, WeatherService>();
 builder.Services.AddTransient<IChatService, ChatService>();

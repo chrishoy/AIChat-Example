@@ -40,7 +40,16 @@ Content-Type: application/json
 }
 ###
 
-# 5. Clear specified chat
+# 5. Chat with continuation
+POST {{Server_HostAddress}}/chat/{{chat.response.body.$.id}}
+Accept: */*
+Content-Type: application/json 
+{
+  "message": "With a pirate accent"
+}
+###
+
+# 6. Clear specified chat
 GET {{Server_HostAddress}}/chat/clear/{{chat.response.body.$.id}}
 Accept: */*
 Content-Type: application/json 
