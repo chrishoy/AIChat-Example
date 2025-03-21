@@ -6,7 +6,8 @@ namespace OllamaChatClientExample.Server.Chat;
 
 public class ChatService : IChatService
 {
-    private const string THINKING_ABOUT_IT = "Still thinking about it...";
+    private const string THINKING_ABOUT = "Thinking about ";
+    private const string STILL_THINKING_ABOUT = "Please wait... Still thinking about ";
 
     private IChatClient _chatClient;
     private HybridCache _cache;
@@ -26,7 +27,7 @@ public class ChatService : IChatService
         var chatHistory = await AddToChatHistory(chatId, ChatRole.User, message);
 
         _ = Task.Run(async () => {
-            // Perform the long-running chat operation
+            // Perform the long-running chat operation (needs to be converted to background task)
             var chatCompletionResponse = await _chatClient.GetResponseAsync(chatHistory);
 
             var chatResponseBuilder = new StringBuilder();
@@ -45,17 +46,17 @@ public class ChatService : IChatService
     public async Task<string> AddToChat(Guid id, string message)
     {
         // Check if the chat is awaiting a response (last entry will be the user message)
-        var lastChatHistoryEntry = await GetLastChatHistoryEntry(id);
-
-        if (lastChatHistoryEntry is null || lastChatHistoryEntry.Role == ChatRole.User)
+        var amIStillThinking = CheckThinking(await GetLastChatHistoryEntry(id));
+        if (amIStillThinking is not null)
         {
-            return THINKING_ABOUT_IT;
+            return amIStillThinking;
         }
 
         var updatedChatHistory = await AddToChatHistory(id, ChatRole.User, message);
 
-        _ = Task.Run(async () => {
-            // Perform the long-running chat operation
+        _ = Task.Run(async () =>
+        {
+            // Perform the long-running chat operation (needs to be converted to background task)
             var chatCompletionResponse = await _chatClient.GetResponseAsync(updatedChatHistory);
 
             var chatResponseBuilder = new StringBuilder();
@@ -68,57 +69,65 @@ public class ChatService : IChatService
             await AddToChatHistory(id, ChatRole.Assistant, chatResponse);
         });
 
-        return lastChatHistoryEntry.Text;
+        return $"{THINKING_ABOUT}{message}";
+    }
+
+    private static string? CheckThinking(ChatMessage? lastChatHistoryEntry)
+    {
+        if (lastChatHistoryEntry is null)
+        {
+            return "Chat not found";
+        }
+        else if (lastChatHistoryEntry.Role == ChatRole.User)
+        {
+            return $"{STILL_THINKING_ABOUT} {lastChatHistoryEntry.Text}";
+        }
+
+        return null;
     }
 
     public async Task<string> GetReply(Guid id)
     {
         // Check if the chat is awaiting a response (last entry will be the user message)
         var lastChatHistoryEntry = await GetLastChatHistoryEntry(id);
-
-        if (lastChatHistoryEntry is null || lastChatHistoryEntry.Role == ChatRole.User)
+        var amIStillThinking = CheckThinking(lastChatHistoryEntry);
+        if (amIStillThinking is not null)
         {
-            return THINKING_ABOUT_IT;
+            return amIStillThinking;
         }
 
-        return lastChatHistoryEntry.Text;
+        return lastChatHistoryEntry?.Text ?? "Erm.. Something went wrong!";
     }
 
-    /// <summary>
-    /// Add a message to the chat history, if the message is User, then append a system waiting message, if the message is Assistant, remove the system waiting message+
-    /// </summary>
-    /// <param name="chatId"></param>
-    /// <param name="role"></param>
-    /// <param name="message"></param>
-    /// <returns></returns>
+    public async Task Clear(Guid id) => await _cache.RemoveByTagAsync(BuildChatTag(id));
+
+    #region Private Methods
+
     private async Task<List<ChatMessage>> AddToChatHistory(Guid chatId, ChatRole role, string message)
     {
         var chatTag = BuildChatTag(chatId);
         var chatHistoryCacheKey = BuildChatHistoryCacheKey(chatId);
         var chatMessage = new ChatMessage(role, message);
         var chatHistory = await _cache.GetOrCreateAsync(chatHistoryCacheKey, async _ => await Task.FromResult(new List<ChatMessage>()), tags: [chatTag]);
+
         chatHistory.Add(chatMessage);
         await _cache.SetAsync(chatHistoryCacheKey, chatHistory, tags: [chatTag]);
+
         return chatHistory;
     }
 
-    /// <summary>
-    /// Add a message to the chat history, if the message is User, then append a system waiting message, if the message is Assistant, remove the system waiting message+
-    /// </summary>
-    /// <param name="chatId"></param>
-    /// <param name="role"></param>
-    /// <param name="message"></param>
-    /// <returns></returns>
     private async Task<ChatMessage?> GetLastChatHistoryEntry(Guid chatId)
     {
         var chatTag = BuildChatTag(chatId);
         var chatHistoryCacheKey = BuildChatHistoryCacheKey(chatId);
         var chatHistory = await _cache.GetOrCreateAsync(chatHistoryCacheKey, async _ => await Task.FromResult(new List<ChatMessage>()), tags: [chatTag]);
+
         return chatHistory.LastOrDefault();
     }
 
-    public async Task Clear(Guid id) => await _cache.RemoveByTagAsync(BuildChatTag(id));
-
     private static string BuildChatTag(Guid id) => $"ChatService.Chat({id})";
+
     private static string BuildChatHistoryCacheKey(Guid id) => $"ChatService.ChatHistory({id})";
+
+    #endregion Private Methods
 }

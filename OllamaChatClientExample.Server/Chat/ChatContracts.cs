@@ -2,7 +2,5 @@
 
 public record NewChatRequest(string Message);
 public record NewChatResponse(Guid Id);
-
 public record AddToChatRequest(string Message);
-
 public record ChatResponse(string Reply);

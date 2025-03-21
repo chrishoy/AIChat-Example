@@ -12,7 +12,6 @@ public static class ChatEndpoints
         group.MapGet("/clear/{id:Guid}", ClearChat).WithName("ClearChat");
     }
 
-
     private static async Task<IResult> NewChat(NewChatRequest request, IChatService chatService)
     {
         var id = await chatService.NewChat(request.Message);
