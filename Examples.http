@@ -12,17 +12,23 @@ POST {{Server_HostAddress}}/chat
 Accept: */*
 Content-Type: application/json 
 {
-  "message": "What is the answer to everything?"
+  "message": "What is the Heisenberg Uncertainty Principle?"
 }
 ###
 
-# 2. Get last chat response - If awaiting response, this will return 'Still thinking...'
+# 2. Get Last Response - If awaiting response will return 'Still thinking...'
 GET {{Server_HostAddress}}/chat/{{chat.response.body.$.id}}
 Accept: */*
 Content-Type: application/json 
 ###
 
-# 3. Chat with continuation
+# 3. Get Conversation - If awaiting response, last entry will return 'Still thinking...'
+GET {{Server_HostAddress}}/chat/conversation/{{chat.response.body.$.id}}
+Accept: */*
+Content-Type: application/json 
+###
+
+# 4. Chat with continuation
 POST {{Server_HostAddress}}/chat/{{chat.response.body.$.id}}
 Accept: */*
 Content-Type: application/json 
@@ -31,7 +37,7 @@ Content-Type: application/json
 }
 ###
 
-# 4. Chat with continuation
+# 5. Chat with continuation
 POST {{Server_HostAddress}}/chat/{{chat.response.body.$.id}}
 Accept: */*
 Content-Type: application/json 

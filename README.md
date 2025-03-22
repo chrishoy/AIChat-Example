@@ -14,9 +14,9 @@ builder.Services.AddChatClient(new OllamaChatClient(new Uri("http://localhost:11
 ```
 
 ### Things to Beware
-- We are using `Redis` to store chat history, and this has been 'abused' to provide minimal orchestration of requests.
-- We should really be implementing the ChatService as a scalable background service.
-- Throttling/request scaling has not been implemented and we are using a non-distributed Chat API (`Ollama` in this case).
+- I am using `Redis` to store chat history, and this has been 'abused' to provide minimal orchestration of requests.
+- The `ChatService` should really be implemented as a scalable background service.
+- Throttling/request scaling has not been implemented as I am using a non-distributed Chat API (`Ollama` in this case), so if you throw multiple requests at `Ollama` while it is still trying to figure things out, you will run into issues.
 - This was developed on a low spec PC which is slow to respond, so `Redis` has been configured (in code) to invalidate after 15 mins.
 - This is very much playground, not production, code.
 - `ChatClientEmulator` is a simple IChatClient replacement purely there for development

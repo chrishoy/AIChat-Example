@@ -43,13 +43,13 @@ public class ChatService : IChatService
         return chatId;
     }
 
-    public async Task<string> AddToChat(Guid id, string message)
+    public async Task<string> ContinueChat(Guid id, string message)
     {
         // Check if the chat is awaiting a response (last entry will be the user message)
-        var amIStillThinking = CheckThinking(await GetLastChatHistoryEntry(id));
-        if (amIStillThinking is not null)
+        var thinkingText = CheckThinking((await GetChatHistory(id)).LastOrDefault());
+        if (thinkingText is not null)
         {
-            return amIStillThinking;
+            return thinkingText;
         }
 
         var updatedChatHistory = await AddToChatHistory(id, ChatRole.User, message);
@@ -72,6 +72,41 @@ public class ChatService : IChatService
         return $"{THINKING_ABOUT}{message}";
     }
 
+    public async Task<string> GetReply(Guid id)
+    {
+        // Check if the chat is awaiting a response (last entry will be the user message)
+        var lastChatHistoryEntry = (await GetChatHistory(id)).LastOrDefault();
+        var thinkingText = CheckThinking(lastChatHistoryEntry);
+        if (thinkingText is not null)
+        {
+            return thinkingText;
+        }
+
+        return lastChatHistoryEntry?.Text ?? "Erm.. Something went wrong!";
+    }
+
+    public async Task<IEnumerable<string>> GetConversation(Guid id)
+    {
+        var chatHistory = await GetChatHistory(id);
+        if (!chatHistory.Any())
+        {
+            return new List<string> { "No chat history" };
+        }
+
+        var conversation = chatHistory.ConvertAll(h => h.Text);
+        string? thinkingText = CheckThinking(chatHistory.Last());
+        if (thinkingText is not null)
+        {
+            return [.. conversation, thinkingText];
+        }
+
+        return conversation;
+    }
+
+    public async Task Clear(Guid id) => await _cache.RemoveByTagAsync(BuildChatTag(id));
+
+    #region Private Methods
+
     private static string? CheckThinking(ChatMessage? lastChatHistoryEntry)
     {
         if (lastChatHistoryEntry is null)
@@ -86,23 +121,6 @@ public class ChatService : IChatService
         return null;
     }
 
-    public async Task<string> GetReply(Guid id)
-    {
-        // Check if the chat is awaiting a response (last entry will be the user message)
-        var lastChatHistoryEntry = await GetLastChatHistoryEntry(id);
-        var amIStillThinking = CheckThinking(lastChatHistoryEntry);
-        if (amIStillThinking is not null)
-        {
-            return amIStillThinking;
-        }
-
-        return lastChatHistoryEntry?.Text ?? "Erm.. Something went wrong!";
-    }
-
-    public async Task Clear(Guid id) => await _cache.RemoveByTagAsync(BuildChatTag(id));
-
-    #region Private Methods
-
     private async Task<List<ChatMessage>> AddToChatHistory(Guid chatId, ChatRole role, string message)
     {
         var chatTag = BuildChatTag(chatId);
@@ -116,13 +134,13 @@ public class ChatService : IChatService
         return chatHistory;
     }
 
-    private async Task<ChatMessage?> GetLastChatHistoryEntry(Guid chatId)
+    private async Task<List<ChatMessage>> GetChatHistory(Guid chatId)
     {
         var chatTag = BuildChatTag(chatId);
         var chatHistoryCacheKey = BuildChatHistoryCacheKey(chatId);
         var chatHistory = await _cache.GetOrCreateAsync(chatHistoryCacheKey, async _ => await Task.FromResult(new List<ChatMessage>()), tags: [chatTag]);
 
-        return chatHistory.LastOrDefault();
+        return chatHistory;
     }
 
     private static string BuildChatTag(Guid id) => $"ChatService.Chat({id})";

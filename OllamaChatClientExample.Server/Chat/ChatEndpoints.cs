@@ -8,7 +8,8 @@ public static class ChatEndpoints
 
         group.MapPost("/", NewChat).WithName("NewChat");
         group.MapGet("/{id:Guid}", GetReply).WithName("GetChat");
-        group.MapPost("/{id:Guid}", AddToChat).WithName("AddToChat");
+        group.MapPost("/{id:Guid}", ContinueChat).WithName("ContinueChat");
+        group.MapGet("/conversation/{id:Guid}", GetConversation).WithName("GetConversation");
         group.MapGet("/clear/{id:Guid}", ClearChat).WithName("ClearChat");
     }
 
@@ -24,9 +25,15 @@ public static class ChatEndpoints
         return reply is not null ? Results.Ok(new ChatResponse(reply)) : Results.NotFound();
     }
 
-    private static async Task<IResult> AddToChat(Guid id, AddToChatRequest request, IChatService chatService)
+    private static async Task<IResult> GetConversation(Guid id, IChatService chatService)
     {
-        var reply = await chatService.AddToChat(id, request.Message);
+        var conversation = await chatService.GetConversation(id);
+        return conversation is not null ? Results.Ok(new ChatHistoryResponse(conversation)) : Results.NotFound();
+    }
+
+    private static async Task<IResult> ContinueChat(Guid id, AddToChatRequest request, IChatService chatService)
+    {
+        var reply = await chatService.ContinueChat(id, request.Message);
         return reply is not null ? Results.Ok(new ChatResponse(reply)) : Results.NotFound();
     }
 
