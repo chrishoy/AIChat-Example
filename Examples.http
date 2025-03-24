@@ -12,7 +12,7 @@ POST {{Server_HostAddress}}/chat
 Accept: */*
 Content-Type: application/json 
 {
-  "message": "What is the Heisenberg Uncertainty Principle?"
+  "message": "What happened between the reigns of Charles I and Charles II in Great Britain?"
 }
 ###
 
