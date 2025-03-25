@@ -17,6 +17,11 @@ public class ChatHistoryService: IChatHistoryService
         var chatTag = ChatHelpers.BuildChatTag(chatId);
         var chatHistoryCacheKey = ChatHelpers.BuildChatHistoryCacheKey(chatId);
         var chatMessage = new ChatMessage(role, message);
+
+        var props = new AdditionalPropertiesDictionary();
+        props.Add("Timestamp", DateTimeOffset.UtcNow);
+
+        chatMessage.AdditionalProperties = props;
         var chatHistory = await _cache.GetOrCreateAsync(chatHistoryCacheKey, async _ => await Task.FromResult(new List<ChatMessage>()), tags: [chatTag], cancellationToken: ct);
 
         chatHistory.Add(chatMessage);

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.AI;
 using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
 using ZiggyCreatures.Caching.Fusion;
 using Microsoft.Extensions.Caching.StackExchangeRedis;

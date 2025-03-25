@@ -59,25 +59,37 @@ public class ChatService : IChatService
         return lastChatHistoryEntry?.Text ?? "Erm.. Something went wrong!";
     }
 
-    public async Task<IEnumerable<string>> GetConversation(Guid id, CancellationToken ct)
+    public async Task<IEnumerable<ChatMessageSummary>> GetConversation(Guid id, CancellationToken ct)
     {
         var chatHistory = await _chatHistoryService.GetChatHistory(id, ct);
         if (!chatHistory.Any())
         {
-            return new List<string> { "No chat history" };
+            return new List<ChatMessageSummary> { new ChatMessageSummary("No chat history", ChatRole.System, DateTimeOffset.UtcNow) };
         }
 
-        var conversation = chatHistory.ConvertAll(h => h.Text);
+        var conversation = chatHistory.ConvertAll(ToChatMessageSummary);
         string? thinkingText = CheckThinking(chatHistory.Last());
         if (thinkingText is not null)
         {
-            return [.. conversation, thinkingText];
+            return [.. conversation, new ChatMessageSummary(thinkingText, ChatRole.System, DateTimeOffset.UtcNow)];
         }
 
         return conversation;
     }
 
     #region Private Methods
+
+    private static ChatMessageSummary ToChatMessageSummary(ChatMessage chatMessage)
+    {
+        DateTimeOffset? timestamp = null;
+        var props = chatMessage.AdditionalProperties;
+        if (props is not null && props.ContainsKey("Timestamp"))
+        {
+            timestamp = (DateTimeOffset?)props["Timestamp"];
+        }
+
+        return new ChatMessageSummary(chatMessage.Text, chatMessage.Role, timestamp);
+    }
 
     private static string? CheckThinking(ChatMessage? lastChatHistoryEntry)
     {
