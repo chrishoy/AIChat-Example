@@ -13,7 +13,7 @@ public class ChatClientEmulator : IChatClient
     {
         var lastMessage = messages.LastOrDefault() ?? new ChatMessage(ChatRole.System, "No messages");
 
-        await Task.Delay(5000);
+        await Task.Delay(10000);
         return await Task.FromResult(new ChatResponse
         {
             Messages = new[]

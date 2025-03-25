@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using OllamaChatClientExample.Server.Chat;
 using OllamaChatClientExample.Server.Weather;
 using OllamaChatClientExample.Server.Emulators;
+using System.Threading.Channels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,14 +13,26 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddChatClient(new OllamaChatClient(new Uri("http://localhost:11434"), "llama3"));
-//builder.Services.AddChatClient(new ChatClientEmulator());
+builder.Services.AddChatClient(new ChatClientEmulator());
+builder.Services.AddHostedService<ChatProcessor>();
 
 builder.Services.AddSingleton<IWeatherService, WeatherService>();
+builder.Services.AddTransient<IChatHistoryService, ChatHistoryService>();
 builder.Services.AddTransient<IChatService, ChatService>();
+
+// See https://learn.microsoft.com/en-us/dotnet/core/extensions/channels#bounded-creation-patterns
+builder.Services.AddSingleton(_ =>
+    Channel.CreateBounded<ChatChannelRequest>(new BoundedChannelOptions(capacity: 1)
+    {
+        FullMode = BoundedChannelFullMode.DropWrite,
+        SingleReader = true,
+        SingleWriter = false,
+        AllowSynchronousContinuations = false
+    }));
 
 // Add FusionCache using Redis as Hybrid (in-memory + distributed) cache
 builder.Services
-    .AddFusionCache()
+    .AddFusionCache()   
     .WithDefaultEntryOptions(options => options.Duration = TimeSpan.FromMinutes(15))
     .WithSerializer(new FusionCacheSystemTextJsonSerializer())
     .WithDistributedCache(new RedisCache(new RedisCacheOptions { Configuration = "localhost:6379" }))

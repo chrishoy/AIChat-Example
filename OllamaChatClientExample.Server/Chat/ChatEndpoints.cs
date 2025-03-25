@@ -13,33 +13,33 @@ public static class ChatEndpoints
         group.MapGet("/clear/{id:Guid}", ClearChat).WithName("ClearChat");
     }
 
-    private static async Task<IResult> NewChat(NewChatRequest request, IChatService chatService)
+    private static async Task<IResult> NewChat(NewChatRequest request, IChatService chatService, CancellationToken ct)
     {
-        var id = await chatService.NewChat(request.Message);
-        return id != Guid.Empty ? Results.Ok(new NewChatResponse(id)) : Results.NotFound();
+        var newChatId = await chatService.NewChat(request.Message, ct);
+        return newChatId != Guid.Empty ? Results.Ok(new NewChatResponse(newChatId)) : Results.NotFound();
     }
 
-    private static async Task<IResult> GetReply(Guid id, IChatService chatService)
+    private static async Task<IResult> GetReply(Guid id, IChatService chatService, CancellationToken ct)
     {
-        var reply = await chatService.GetReply(id);
+        var reply = await chatService.GetReply(id, ct);
         return reply is not null ? Results.Ok(new ChatResponse(reply)) : Results.NotFound();
     }
 
-    private static async Task<IResult> GetConversation(Guid id, IChatService chatService)
+    private static async Task<IResult> GetConversation(Guid id, IChatService chatService, CancellationToken ct)
     {
-        var conversation = await chatService.GetConversation(id);
+        var conversation = await chatService.GetConversation(id, ct);
         return conversation is not null ? Results.Ok(new ChatHistoryResponse(conversation)) : Results.NotFound();
     }
 
-    private static async Task<IResult> ContinueChat(Guid id, AddToChatRequest request, IChatService chatService)
+    private static async Task<IResult> ContinueChat(Guid id, AddToChatRequest request, IChatService chatService, CancellationToken ct)
     {
-        var reply = await chatService.ContinueChat(id, request.Message);
+        var reply = await chatService.ContinueChat(id, request.Message, ct);
         return reply is not null ? Results.Ok(new ChatResponse(reply)) : Results.NotFound();
     }
 
-    private static async Task<IResult> ClearChat(Guid id, IChatService chatService)
+    private static async Task<IResult> ClearChat(Guid id, IChatHistoryService chatHistoryService, CancellationToken ct)
     {
-        await chatService.Clear(id);
-        return Results.Ok();
+        await chatHistoryService.Clear(id, ct);
+        return Results.Ok(new ChatHistoryClearedResponse(true));
     }
 }
