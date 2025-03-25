@@ -27,4 +27,9 @@
     </ProjectReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Emulators\" />
+    <Folder Include="Settings\" />
+  </ItemGroup>
+
 </Project>

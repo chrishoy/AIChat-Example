@@ -4,7 +4,6 @@ using ZiggyCreatures.Caching.Fusion;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using OllamaChatClientExample.Server.Chat;
 using OllamaChatClientExample.Server.Weather;
-using OllamaChatClientExample.Server.Emulators;
 using System.Threading.Channels;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,8 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddChatClient(new OllamaChatClient(new Uri("http://localhost:11434"), "llama3"));
-builder.Services.AddChatClient(new ChatClientEmulator());
+builder.Services.AddChatClient(builder.Configuration);
 builder.Services.AddHostedService<ChatProcessor>();
 
 builder.Services.AddSingleton<IWeatherService, WeatherService>();
@@ -36,7 +34,7 @@ builder.Services
     .WithDefaultEntryOptions(options => options.Duration = TimeSpan.FromMinutes(15))
     .WithSerializer(new FusionCacheSystemTextJsonSerializer())
     .WithDistributedCache(new RedisCache(new RedisCacheOptions { Configuration = "localhost:6379" }))
-    .AsHybridCache();
+.AsHybridCache();
 
 var app = builder.Build();
 
