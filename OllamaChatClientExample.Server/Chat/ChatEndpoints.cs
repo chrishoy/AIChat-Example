@@ -7,8 +7,8 @@ public static class ChatEndpoints
         var group = app.MapGroup("/chat");
 
         group.MapPost("/", Chat).WithName("Chat");
-        group.MapGet("/{id:Guid}", GetReply).WithName("GetChat");
         group.MapPost("/{id:Guid}", ContinueChat).WithName("ContinueChat");
+        group.MapGet("/{id:Guid}", GetLastResponse).WithName("GetChat");
         group.MapGet("/conversation/{id:Guid}", GetConversation).WithName("GetConversation");
         group.MapGet("/clear/{id:Guid}", ClearChat).WithName("ClearChat");
     }
@@ -19,7 +19,13 @@ public static class ChatEndpoints
         return response is not null ? Results.Ok(response) : Results.NotFound();
     }
 
-    private static async Task<IResult> GetReply(Guid id, IChatService chatService, CancellationToken ct)
+    private static async Task<IResult> ContinueChat(Guid id, ChatRequest request, IChatService chatService, CancellationToken ct)
+    {
+        var response = await chatService.Chat(request.Message, id, ct);
+        return response is not null ? Results.Ok(response) : Results.NotFound();
+    }
+
+    private static async Task<IResult> GetLastResponse(Guid id, IChatService chatService, CancellationToken ct)
     {
         var response = await chatService.GetLastResponse(id, ct);
         return response is not null ? Results.Ok(response) : Results.NotFound();
@@ -29,12 +35,6 @@ public static class ChatEndpoints
     {
         var conversation = await chatService.GetConversation(id, ct);
         return conversation is not null ? Results.Ok(new ChatHistoryResponse(conversation)) : Results.NotFound();
-    }
-
-    private static async Task<IResult> ContinueChat(Guid id, AddToChatRequest request, IChatService chatService, CancellationToken ct)
-    {
-        var reply = await chatService.ContinueChat(id, request.Message, ct);
-        return reply is not null ? Results.Ok(new ChatResponse(reply, id)) : Results.NotFound();
     }
 
     private static async Task<IResult> ClearChat(Guid id, IChatHistoryService chatHistoryService, CancellationToken ct)

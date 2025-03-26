@@ -6,6 +6,7 @@ namespace OllamaChatClientExample.Server.Chat;
 
 public class ChatService : IChatService
 {
+    private const string CHAT_NOT_FOUND = "Chat not found";
     private const string THINKING_ABOUT = "Thinking about ";
     private const string STILL_THINKING_ABOUT = "Please wait... Still thinking about ";
 
@@ -23,27 +24,32 @@ public class ChatService : IChatService
         // Generate a unique id (or use supplied id) so we can track the conversation
         var chatId = id ?? Guid.NewGuid();
 
-        // Start a new chat conversation
-        var chatHistory = await _chatHistoryService.AddToChatHistory(chatId, ChatRole.User, message, ct);
-
-        // Delegate request to ChatProcessor - Need to figure out how to determine if channel is full and can't accept more processing requests.
-        await _chatChannel.Writer.WriteAsync(new ChatChannelRequest(chatId, chatHistory));
-
-        return new ChatMessageSummary(chatId, $"{THINKING_ABOUT} {message}", ChatRole.Assistant, DateTimeOffset.UtcNow);
-    }
-
-    public async Task<string> ContinueChat(Guid id, string message, CancellationToken ct = default)
-    {
-        // Check if the chat is awaiting a response (last entry will be the user message)
-        var thinkingText = CheckThinking((await _chatHistoryService.GetChatHistory(id, ct)).LastOrDefault());
-        if (thinkingText is not null)
+        // If id is supplied, see if we have an ongoing request
+        if (id is not null)
         {
-            return thinkingText;
+            var chatHistory = await _chatHistoryService.GetChatHistory(chatId, ct);
+            if (!chatHistory.Any())
+            {
+                return new ChatMessageSummary(id.Value, CHAT_NOT_FOUND, ChatRole.System, DateTimeOffset.UtcNow);
+            }
+
+            // Check if the chat is awaiting a response (last entry will be the user message)
+            var lastChatHistoryEntry = chatHistory.Last();
+            var thinkingText = CheckThinking(lastChatHistoryEntry);
+
+            if (thinkingText is not null)
+            {
+                return new ChatMessageSummary(chatId, thinkingText, ChatRole.System, DateTimeOffset.UtcNow);
+            }
         }
 
-        var updatedChatHistory = await _chatHistoryService.AddToChatHistory(id, ChatRole.User, message, ct);
-        await _chatChannel.Writer.WriteAsync(new ChatChannelRequest(id, updatedChatHistory));
-        return $"{THINKING_ABOUT}{message}";
+        // Start new or append to chat conversation
+        var newChatHistory = await _chatHistoryService.AddToChatHistory(chatId, ChatRole.User, message, ct);
+
+        // Delegate request to ChatProcessor - Need to figure out how to determine if channel is full and can't accept more processing requests.
+        await _chatChannel.Writer.WriteAsync(new ChatChannelRequest(chatId, newChatHistory));
+
+        return new ChatMessageSummary(chatId, $"{THINKING_ABOUT} {message}", ChatRole.Assistant, DateTimeOffset.UtcNow);
     }
 
     public async Task<ChatMessageSummary> GetLastResponse(Guid id, CancellationToken ct = default)
@@ -87,7 +93,7 @@ public class ChatService : IChatService
     {
         if (lastChatHistoryEntry is null)
         {
-            return "Chat not found";
+            return CHAT_NOT_FOUND;
         }
         else if (lastChatHistoryEntry.Role == ChatRole.User)
         {
