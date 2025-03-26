@@ -18,10 +18,10 @@ public class ChatService : IChatService
         _chatHistoryService = chatHistoryService;
     }
 
-    public async Task<Guid> NewChat(string message, CancellationToken ct)
+    public async Task<ChatMessageSummary> Chat(string message, Guid? id, CancellationToken ct = default)
     {
         // Generate a unique id (or use supplied id) so we can track the conversation
-        var chatId = Guid.NewGuid();
+        var chatId = id ?? Guid.NewGuid();
 
         // Start a new chat conversation
         var chatHistory = await _chatHistoryService.AddToChatHistory(chatId, ChatRole.User, message, ct);
@@ -29,10 +29,10 @@ public class ChatService : IChatService
         // Delegate request to ChatProcessor - Need to figure out how to determine if channel is full and can't accept more processing requests.
         await _chatChannel.Writer.WriteAsync(new ChatChannelRequest(chatId, chatHistory));
 
-        return chatId;
+        return new ChatMessageSummary(chatId, $"{THINKING_ABOUT} {message}", ChatRole.Assistant, DateTimeOffset.UtcNow);
     }
 
-    public async Task<string> ContinueChat(Guid id, string message, CancellationToken ct)
+    public async Task<string> ContinueChat(Guid id, string message, CancellationToken ct = default)
     {
         // Check if the chat is awaiting a response (last entry will be the user message)
         var thinkingText = CheckThinking((await _chatHistoryService.GetChatHistory(id, ct)).LastOrDefault());
@@ -46,17 +46,21 @@ public class ChatService : IChatService
         return $"{THINKING_ABOUT}{message}";
     }
 
-    public async Task<string> GetReply(Guid id, CancellationToken ct)
+    public async Task<ChatMessageSummary> GetLastResponse(Guid id, CancellationToken ct = default)
     {
-        // Check if the chat is awaiting a response (last entry will be the user message)
-        var lastChatHistoryEntry = (await _chatHistoryService.GetChatHistory(id, ct)).LastOrDefault();
-        var thinkingText = CheckThinking(lastChatHistoryEntry);
-        if (thinkingText is not null)
+        var chatHistory = await _chatHistoryService.GetChatHistory(id, ct);
+        if (!chatHistory.Any())
         {
-            return thinkingText;
+            return new ChatMessageSummary(id, "No chat history", ChatRole.System, DateTimeOffset.UtcNow);
         }
 
-        return lastChatHistoryEntry?.Text ?? "Erm.. Something went wrong!";
+        // Check if the chat is awaiting a response (last entry will be the user message)
+        var lastChatHistoryEntry = chatHistory.Last();
+        var thinkingText = CheckThinking(lastChatHistoryEntry);
+
+        return thinkingText is not null
+            ? new ChatMessageSummary(id, thinkingText, ChatRole.System, DateTimeOffset.UtcNow)
+            : lastChatHistoryEntry.ToChatMessageSummary(id);
     }
 
     public async Task<IEnumerable<ChatMessageSummary>> GetConversation(Guid id, CancellationToken ct)
@@ -64,32 +68,20 @@ public class ChatService : IChatService
         var chatHistory = await _chatHistoryService.GetChatHistory(id, ct);
         if (!chatHistory.Any())
         {
-            return new List<ChatMessageSummary> { new ChatMessageSummary("No chat history", ChatRole.System, DateTimeOffset.UtcNow) };
+            return new List<ChatMessageSummary> { new ChatMessageSummary(id, "No chat history", ChatRole.System, DateTimeOffset.UtcNow) };
         }
 
-        var conversation = chatHistory.ConvertAll(ToChatMessageSummary);
+        var conversation = chatHistory.ConvertAll(m => m.ToChatMessageSummary(id));
         string? thinkingText = CheckThinking(chatHistory.Last());
         if (thinkingText is not null)
         {
-            return [.. conversation, new ChatMessageSummary(thinkingText, ChatRole.System, DateTimeOffset.UtcNow)];
+            return [.. conversation, new ChatMessageSummary(id, thinkingText, ChatRole.System, DateTimeOffset.UtcNow)];
         }
 
         return conversation;
     }
 
     #region Private Methods
-
-    private static ChatMessageSummary ToChatMessageSummary(ChatMessage chatMessage)
-    {
-        DateTimeOffset? timestamp = null;
-        var props = chatMessage.AdditionalProperties;
-        if (props is not null && props.ContainsKey("Timestamp"))
-        {
-            timestamp = (DateTimeOffset?)props["Timestamp"];
-        }
-
-        return new ChatMessageSummary(chatMessage.Text, chatMessage.Role, timestamp);
-    }
 
     private static string? CheckThinking(ChatMessage? lastChatHistoryEntry)
     {

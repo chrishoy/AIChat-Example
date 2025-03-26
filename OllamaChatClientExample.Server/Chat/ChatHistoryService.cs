@@ -14,8 +14,8 @@ public class ChatHistoryService: IChatHistoryService
 
     public async Task<List<ChatMessage>> AddToChatHistory(Guid chatId, ChatRole role, string message, CancellationToken ct)
     {
-        var chatTag = ChatHelpers.BuildChatTag(chatId);
-        var chatHistoryCacheKey = ChatHelpers.BuildChatHistoryCacheKey(chatId);
+        var chatTag = chatId.ToChatTag();
+        var chatHistoryCacheKey = chatId.ToChatHistoryCacheKey();
         var chatMessage = new ChatMessage(role, message);
 
         var props = new AdditionalPropertiesDictionary();
@@ -32,13 +32,13 @@ public class ChatHistoryService: IChatHistoryService
 
     public async Task<List<ChatMessage>> GetChatHistory(Guid chatId, CancellationToken ct)
     {
-        var chatTag = ChatHelpers.BuildChatTag(chatId);
-        var chatHistoryCacheKey = ChatHelpers.BuildChatHistoryCacheKey(chatId);
+        var chatTag = chatId.ToChatTag();
+        var chatHistoryCacheKey = chatId.ToChatHistoryCacheKey();
         var chatHistory = await _cache.GetOrCreateAsync(chatHistoryCacheKey, async _ => await Task.FromResult(new List<ChatMessage>()), tags: [chatTag], cancellationToken: ct);
 
         return chatHistory;
     }
 
     public async Task Clear(Guid id, CancellationToken ct) => 
-        await _cache.RemoveByTagAsync(ChatHelpers.BuildChatTag(id), cancellationToken: ct);
+        await _cache.RemoveByTagAsync(id.ToChatTag(), cancellationToken: ct);
 }
