@@ -1,58 +1,68 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { Button } from "./components/ui/Button";
+import { Textarea } from "./components/ui/Textarea";
 import './App.css';
 
-interface Forecast {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
+interface ChatResponse {
+    id: string;
+    text: string;
+    role: string;
+    timestamp: string;
 }
 
 function App() {
-    const [forecasts, setForecasts] = useState<Forecast[]>();
+    const [message, setMessage] = useState("");
+    const [response, setResponse] = useState<ChatResponse | null>(null);
 
-    useEffect(() => {
-        populateWeatherData();
-    }, []);
+    const handleSubmit = async () => {
+        try {
+            const res = await fetch("chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message }),
+            });
+            const data = await res.json();
+            setResponse(data);
+        } catch (error) {
+            console.error("Error submitting message:", error);
+        }
+    };
 
-    const contents = forecasts === undefined
-        ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-        : <table className="table table-striped" aria-labelledby="tableLabel">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                {forecasts.map(forecast =>
-                    <tr key={forecast.date}>
-                        <td>{forecast.date}</td>
-                        <td>{forecast.temperatureC}</td>
-                        <td>{forecast.temperatureF}</td>
-                        <td>{forecast.summary}</td>
-                    </tr>
-                )}
-            </tbody>
-        </table>;
+    const messageContents =
+        <div className="p-4 space-y-4">
+            <Textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Type your message here..."
+                className="w-full"
+            />
+                <Button onClick={handleSubmit}>Submit</Button>
+            {response && (
+                <div className="p-2 border rounded mt-2">
+                    <p><strong>Id:</strong> {response.id}</p>
+                    <p><strong>Role:</strong> {response.role}</p>
+                    <p><strong>Message:</strong> {response.text}</p>
+                    <p><strong>Timestamp:</strong> {response.timestamp}</p>
+                </div>
+            )}
+        </div>;
 
     return (
         <div>
-            <h1 id="tableLabel">Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
-            {contents}
+            <h1 id="tableLabel">Ollama Chat...</h1>
+            <p>This component demonstrates the uses of the Ollama AI chat service.</p>
+
+            <div className="grid grid-flow-col grid-rows-3 gap-4">
+                <div className="row-span-3 bg-fuchsia-600 border-blue-500 border-2">Spans 3 rows</div>
+                <div className="col-span-2 border-red-500 border-2">Spans 2 cols</div>
+                <div className="col-span-2 row-span-2 border-green-500 border-2">Spans 2 cols and 2 rows</div>
+            </div>
+
+            <div>{messageContents}</div>
         </div>
     );
-
-    async function populateWeatherData() {
-        const response = await fetch('weather');
-        if (response.ok) {
-            const data = await response.json();
-            setForecasts(data);
-        }
-    }
 }
 
 export default App;
