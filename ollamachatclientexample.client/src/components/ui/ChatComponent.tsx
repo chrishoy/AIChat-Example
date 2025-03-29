@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AnimatedButton from "./AnimatedButton";
-import { Textarea } from "./Textarea";
+import Textarea from "./Textarea";
 
 type ChatComponentProps = {
     busy?: boolean;
