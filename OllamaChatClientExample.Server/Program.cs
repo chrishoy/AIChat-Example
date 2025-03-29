@@ -12,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddChatClient(builder.Configuration);
+
+// Add ChatProcessor as a new hosted service (background service)
 builder.Services.AddHostedService<ChatProcessor>();
 
 builder.Services.AddSingleton<IWeatherService, WeatherService>();

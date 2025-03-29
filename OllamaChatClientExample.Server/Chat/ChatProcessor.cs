@@ -5,22 +5,25 @@ using System.Threading.Channels;
 
 namespace OllamaChatClientExample.Server.Chat;
 
+/// <summary>
+/// Processes a <see cref="Channel<T>" requests/> to make a long-running call to a <see cref="IChatClient"/>
+/// </summary>
 public class ChatProcessor : BackgroundService
 {
+    private readonly Channel<ChatChannelRequest> _chatChannel;
     private readonly IChatClient _chatClient;
     private readonly IChatHistoryService _chatHistoryService;
-    private readonly Channel<ChatChannelRequest> _chatChannel;
 
-    public ChatProcessor(IChatClient chatClient, IChatHistoryService chatHistoryService, Channel<ChatChannelRequest> chatChannel)
+    public ChatProcessor(Channel<ChatChannelRequest> chatChannel, IChatClient chatClient, IChatHistoryService chatHistoryService)
     {
+        _chatChannel = chatChannel;
         _chatClient = chatClient;
         _chatHistoryService = chatHistoryService;
-        _chatChannel = chatChannel;
     }
 
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        // Read from the channel and process the chat
+        // Read any request placed in the channel and forward to chat processing logic
         while (await _chatChannel.Reader.WaitToReadAsync(ct))
         {
             var request = await _chatChannel.Reader.ReadAsync(ct);
