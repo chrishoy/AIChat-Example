@@ -1,16 +1,16 @@
-import { ComponentProps } from "react";
+﻿import { ComponentProps } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface TextareaProps extends ComponentProps<typeof TextareaAutosize> { }
-
-export function Textarea(props: TextareaProps) {
+const Textarea: React.FC<ComponentProps<typeof TextareaAutosize>> = (props) => {
+    
     return (
         <TextareaAutosize
             {...props}
-            className="w-96 p-2 border rounded"
+            className="w-96 rounded border p-2"
             minRows={2}
             maxRows={10}
         />
     );
 }
+
+export default Textarea;

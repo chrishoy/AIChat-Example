@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Button } from "./components/ui/Button";
-import { Textarea } from "./components/ui/Textarea";
+﻿import { useState } from 'react';
 import './App.css';
+import ChatComponent from './components/ui/ChatComponent';
+import ConversationList from './components/ui/ConversationList';
+import AnimatedButton from './components/ui/AnimatedButton';
 
 interface ChatResponse {
     id: string;
@@ -10,13 +11,22 @@ interface ChatResponse {
     timestamp: string;
 }
 
-function App() {
-    const [message, setMessage] = useState("");
-    const [response, setResponse] = useState<ChatResponse | null>(null);
+interface Conversation {
+    conversation: ChatResponse[];
+}
 
-    const handleSubmit = async () => {
+function App() {
+    const [response, setResponse] = useState<ChatResponse | null>(null);
+    const [conversation, setConversation] = useState<Conversation | null>(null);
+    const [awaitingResponse, setAwaitingResponse] = useState(false);
+    const [awaitingConversation, setAwaitingConversation] = useState(false);
+
+    const handleSubmitMessage = async (message: string) => {
         try {
-            const res = await fetch("chat", {
+            // Check for continuation chat
+            const chatId = response?.id;
+            setAwaitingResponse(true);
+            const res = await fetch(chatId == null ? "chat" : `chat/${chatId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -25,42 +35,52 @@ function App() {
             });
             const data = await res.json();
             setResponse(data);
+            await getConversation(data.id);
+            setAwaitingResponse(false);
         } catch (error) {
+            setAwaitingResponse(false);
             console.error("Error submitting message:", error);
         }
     };
 
-    const messageContents =
-        <div className="p-4 space-y-4">
-            <Textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type your message here..."
-                className="w-full"
-            />
-                <Button onClick={handleSubmit}>Submit</Button>
-            {response && (
-                <div className="p-2 border rounded mt-2">
-                    <p><strong>Id:</strong> {response.id}</p>
-                    <p><strong>Role:</strong> {response.role}</p>
-                    <p><strong>Message:</strong> {response.text}</p>
-                    <p><strong>Timestamp:</strong> {response.timestamp}</p>
-                </div>
-            )}
-        </div>;
+    const getConversation = async (id: string) => {
+        try {
+            console.log(`conversation/${id}`);
+            setAwaitingConversation(true);
+            const res = await fetch(`chat/conversation/${id}`);
+            const data = await res.json();
+            setConversation(data);
+            setAwaitingConversation(false);
+        } catch (error) {
+            setAwaitingConversation(false);
+            console.error("Error getting conversation:", error);
+        }
+    };
 
     return (
         <div>
             <h1 id="tableLabel">Ollama Chat...</h1>
             <p>This component demonstrates the uses of the Ollama AI chat service.</p>
-
-            <div className="grid grid-flow-col grid-rows-3 gap-4">
-                <div className="row-span-3 bg-fuchsia-600 border-blue-500 border-2">Spans 3 rows</div>
-                <div className="col-span-2 border-red-500 border-2">Spans 2 cols</div>
-                <div className="col-span-2 row-span-2 border-green-500 border-2">Spans 2 cols and 2 rows</div>
+            <div className="gap=5 grid grid-flow-row">
+                <div>
+                    <ChatComponent onsubmit={handleSubmitMessage} busy={awaitingResponse} />
+                </div>
+                {response && (
+                    <div>
+                        <AnimatedButton
+                            onClick={() => getConversation(response.id)}
+                            animationMinPeriod={2000}
+                            busy={awaitingConversation}>
+                            Get Conversation
+                        </AnimatedButton>
+                    </div>
+                )}
+                {conversation && (
+                    <div>
+                        <ConversationList conversation={conversation} />
+                    </div>
+                )}
             </div>
-
-            <div>{messageContents}</div>
         </div>
     );
 }
