@@ -21,10 +21,12 @@ function App() {
     const [awaitingResponse, setAwaitingResponse] = useState(false);
     const [awaitingConversation, setAwaitingConversation] = useState(false);
 
-    const handleSubmitMessage = async (message: string, id: string | null) => {
+    const handleSubmitMessage = async (message: string) => {
         try {
+            // Check for continuation chat
+            const chatId = response?.id;
             setAwaitingResponse(true);
-            const res = await fetch(id == null ? "chat" : `chat/${id}`, {
+            const res = await fetch(chatId == null ? "chat" : `chat/${chatId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -67,6 +69,7 @@ function App() {
                     <div>
                         <AnimatedButton
                             onClick={() => getConversation(response.id)}
+                            animationMinPeriod={2000}
                             busy={awaitingConversation}>
                             Get Conversation
                         </AnimatedButton>
@@ -75,14 +78,6 @@ function App() {
                 {conversation && (
                     <div>
                         <ConversationList conversation={conversation} />
-                    </div>
-                )}
-                {response && (
-                    <div className="mt-2 rounded border p-2">
-                        <p><strong>Id:</strong> {response.id}</p>
-                        <p><strong>Role:</strong> {response.role}</p>
-                        <p><strong>Message:</strong> {response.text}</p>
-                        <p><strong>Timestamp:</strong> {response.timestamp}</p>
                     </div>
                 )}
             </div>

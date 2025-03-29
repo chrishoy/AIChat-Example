@@ -4,7 +4,7 @@ import { Textarea } from "./Textarea";
 
 type ChatComponentProps = {
     busy?: boolean;
-    onsubmit?: (message: string) => Promise<void>
+    onsubmit?: (message: string, id?: string) => Promise<void>
 }
 
 const ChatComponent: React.FC<ChatComponentProps> = ({ busy, onsubmit }) => {
