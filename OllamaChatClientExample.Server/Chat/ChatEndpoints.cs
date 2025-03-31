@@ -34,12 +34,12 @@ public static class ChatEndpoints
     private static async Task<IResult> GetConversation(Guid id, IChatService chatService, CancellationToken ct)
     {
         var conversation = await chatService.GetConversation(id, ct);
-        return conversation is not null ? Results.Ok(new ChatHistoryResponse(conversation)) : Results.NotFound();
+        return conversation is not null ? Results.Ok(conversation) : Results.NotFound();
     }
 
     private static async Task<IResult> ClearChat(Guid id, IChatHistoryService chatHistoryService, CancellationToken ct)
     {
         await chatHistoryService.Clear(id, ct);
-        return Results.Ok(new ChatHistoryClearedResponse(true));
+        return Results.Ok(new ConversationClearedResponse(true));
     }
 }

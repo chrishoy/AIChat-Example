@@ -8,7 +8,7 @@ public static class ChatHelpers
 
     public static string ToChatHistoryCacheKey(this Guid id) => $"ChatService.ChatHistory({id})";
 
-    public static ChatMessageSummary ToChatMessageSummary(this ChatMessage chatMessage, Guid id)
+    public static Message ToChatMessageSummary(this ChatMessage chatMessage, Guid id)
     {
         DateTimeOffset? timestamp = null;
         var props = chatMessage.AdditionalProperties;
@@ -17,6 +17,6 @@ public static class ChatHelpers
             timestamp = (DateTimeOffset?)props["Timestamp"];
         }
 
-        return new ChatMessageSummary(id, chatMessage.Text, chatMessage.Role, timestamp);
+        return new Message(id, chatMessage.Text, chatMessage.Role, timestamp);
     }
 }

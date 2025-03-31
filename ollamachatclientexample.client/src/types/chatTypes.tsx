@@ -6,5 +6,6 @@ export type Message = {
 };
 
 export type Conversation = {
-    conversation: Message[];
+    messages: Message[];
+    busy?: boolean;
 };

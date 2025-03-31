@@ -6,14 +6,10 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
-    --color-red-500: oklch(0.637 0.237 25.331);
     --color-red-700: oklch(0.505 0.213 27.518);
-    --color-green-500: oklch(0.723 0.219 149.579);
     --color-green-700: oklch(0.527 0.154 150.069);
-    --color-blue-500: oklch(0.623 0.214 259.815);
     --color-blue-600: oklch(0.546 0.245 262.881);
     --color-blue-700: oklch(0.488 0.243 264.376);
-    --color-fuchsia-600: oklch(0.591 0.293 322.896);
     --color-gray-100: oklch(0.967 0.003 264.542);
     --color-gray-300: oklch(0.872 0.01 258.338);
     --color-gray-500: oklch(0.551 0.027 264.364);
@@ -179,18 +175,6 @@
   .relative {
     position: relative;
   }
-  .col-span-2 {
-    grid-column: span 2 / span 2;
-  }
-  .row-span-2 {
-    grid-row: span 2 / span 2;
-  }
-  .row-span-3 {
-    grid-row: span 3 / span 3;
-  }
-  .mt-2 {
-    margin-top: calc(var(--spacing) * 2);
-  }
   .mb-2 {
     margin-bottom: calc(var(--spacing) * 2);
   }
@@ -230,23 +214,14 @@
   .resize {
     resize: both;
   }
-  .grid-flow-col {
-    grid-auto-flow: column;
-  }
   .grid-flow-row {
     grid-auto-flow: row;
-  }
-  .grid-rows-3 {
-    grid-template-rows: repeat(3, minmax(0, 1fr));
   }
   .items-center {
     align-items: center;
   }
   .justify-center {
     justify-content: center;
-  }
-  .gap-4 {
-    gap: calc(var(--spacing) * 4);
   }
   .space-y-4 {
     :where(& > :not(:last-child)) {
@@ -279,26 +254,14 @@
     border-style: var(--tw-border-style);
     border-width: 2px;
   }
-  .border-blue-500 {
-    border-color: var(--color-blue-500);
-  }
   .border-gray-300 {
     border-color: var(--color-gray-300);
-  }
-  .border-green-500 {
-    border-color: var(--color-green-500);
-  }
-  .border-red-500 {
-    border-color: var(--color-red-500);
   }
   .bg-blue-600 {
     background-color: var(--color-blue-600);
   }
   .bg-blue-700 {
     background-color: var(--color-blue-700);
-  }
-  .bg-fuchsia-600 {
-    background-color: var(--color-fuchsia-600);
   }
   .bg-gray-100 {
     background-color: var(--color-gray-100);

@@ -1,22 +1,12 @@
 ﻿import { useState } from 'react';
 import './App.css';
 import ChatComponent from './components/ui/ChatComponent';
-import ConversationList from './components/ui/ConversationList';
+import ConversationComponent from './components/ui/ConversationComponent';
 import AnimatedButton from './components/ui/AnimatedButton';
-
-interface ChatResponse {
-    id: string;
-    text: string;
-    role: string;
-    timestamp: string;
-}
-
-interface Conversation {
-    conversation: ChatResponse[];
-}
+import { Message, Conversation } from './types/chatTypes';
 
 function App() {
-    const [response, setResponse] = useState<ChatResponse | null>(null);
+    const [response, setResponse] = useState<Message | null>(null);
     const [conversation, setConversation] = useState<Conversation | null>(null);
     const [awaitingResponse, setAwaitingResponse] = useState(false);
     const [awaitingConversation, setAwaitingConversation] = useState(false);
@@ -62,9 +52,9 @@ function App() {
             <h1 id="tableLabel">Ollama Chat...</h1>
             <p>This component demonstrates the uses of the Ollama AI chat service.</p>
             <div className="gap=5 grid grid-flow-row">
-                <div>
+                {!conversation && (
                     <ChatComponent onsubmit={handleSubmitMessage} busy={awaitingResponse} />
-                </div>
+                    )}
                 {response && (
                     <div>
                         <AnimatedButton
@@ -77,7 +67,7 @@ function App() {
                 )}
                 {conversation && (
                     <div>
-                        <ConversationList conversation={conversation} />
+                        <ConversationComponent conversation={conversation} onsubmit={handleSubmitMessage} busy={awaitingResponse} />
                     </div>
                 )}
             </div>

@@ -2,7 +2,7 @@
 
 public interface IChatService
 {
-    Task<ChatMessageSummary> Chat(string message, Guid? id, CancellationToken ct = default);
-    Task<ChatMessageSummary> GetLastResponse(Guid id, CancellationToken ct = default);
-    Task<IEnumerable<ChatMessageSummary>> GetConversation(Guid id, CancellationToken ct = default);
+    Task<Message> Chat(string message, Guid? id, CancellationToken ct = default);
+    Task<Message> GetLastResponse(Guid id, CancellationToken ct = default);
+    Task<Conversation> GetConversation(Guid id, CancellationToken ct = default);
 }
