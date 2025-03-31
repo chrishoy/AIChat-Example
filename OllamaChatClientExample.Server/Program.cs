@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddChatClient(builder.Configuration);
 
-// Add ChatProcessor as a new hosted service (background service)
+// Add ChatProcessor as a new hosted (background) service
 builder.Services.AddHostedService<ChatProcessor>();
 
 builder.Services.AddSingleton<IWeatherService, WeatherService>();
@@ -22,7 +22,7 @@ builder.Services.AddTransient<IChatService, ChatService>();
 
 // See https://learn.microsoft.com/en-us/dotnet/core/extensions/channels#bounded-creation-patterns
 builder.Services.AddSingleton(_ =>
-    // Set channel capacity to 1 to ensure that only one request is processed at a time
+    // Use .Net Channel for messaging - Set channel capacity to 1 to ensure that only one request is processed at a time.
     Channel.CreateBounded<ChatChannelRequest>(new BoundedChannelOptions(capacity: 1)
     {
         FullMode = BoundedChannelFullMode.DropWrite,

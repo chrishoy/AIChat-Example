@@ -4,9 +4,10 @@
 Simple .NET 9 chat client/api example that demonstrates how to use the `Ollama` Chat API.
 
 ### Getting Started
+- Set up persistent volume local folders and update `docker-compose.yml` with folder locations first.
 - `docker-compose up -d` to pull and start `Ollama` and `Redis` docker containers.
 - `docker exec -it ollama ollama pull llama3` to pull the `llama3` model into the `Ollama` container (this will take a while).
-- Use HTTP GET/POST examples in `Examples.http`, or use Postman.
+- Use HTTP GET/POST examples in `Examples.http`, use Postman. A ReactJS client is currently in development.
 - Switching between emulator and Ollama AI Chat Client is done in `appSettings.development.json`
 ```
   "ChatSettings": {
