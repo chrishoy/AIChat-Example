@@ -1,6 +1,5 @@
 ﻿import React, { useEffect, useState, useRef } from "react";
 import { Conversation } from "../../types/chatTypes";
-//import ChatComponent from "./ChatComponent";
 import AnimatedButton from "./AnimatedButton";
 import Textarea from "./Textarea";
 
@@ -34,6 +33,7 @@ const ConversationComponent: React.FC<ConversationComponentProps> = ({ conversat
             )}
             <div className="flex space-y-4 p-4">
                 <Textarea
+                    hidden={busy}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Type your message here..."
@@ -46,9 +46,6 @@ const ConversationComponent: React.FC<ConversationComponentProps> = ({ conversat
                     Submit
                 </AnimatedButton>
             </div>
-            {/*<div>*/}
-            {/*    <ChatComponent onsubmit={onsubmit} busy={busy} />*/}
-            {/*</div>*/}
         </div>
     );
 };

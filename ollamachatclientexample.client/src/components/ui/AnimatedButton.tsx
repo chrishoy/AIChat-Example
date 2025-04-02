@@ -7,19 +7,25 @@ type AnimatedButtonProps = {
     children: React.ReactNode;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-const AnimatedButton: React.FC<AnimatedButtonProps> = ({ busy, animationMinPeriod = 0, children, className, ...props }) => {
+const AnimatedButton: React.FC<AnimatedButtonProps> = ({ busy, children, className, ...props }) => {
     const [showBusy, setShowBusy] = useState(busy);
 
     useEffect(() => {
-        if (busy) {
-            setShowBusy(true);
-        } else if (animationMinPeriod > 0) {
-            const timeout = setTimeout(() => setShowBusy(false), animationMinPeriod);
-            return () => clearTimeout(timeout);
-        } else {
-            setShowBusy(false);
-        }
-    }, [busy, animationMinPeriod]);
+        setShowBusy(busy);
+    //    if (busy) {
+    //        setShowBusy(true);
+    //        if (animationMinPeriod > 0) {
+    //            const timeout = setTimeout(() => {
+    //                if (!busy) {
+    //                    setShowBusy(false);
+    //                }
+    //            }, animationMinPeriod);
+    //            return () => clearTimeout(timeout);
+    //        } else {
+    //            setShowBusy(false);
+    //        }
+    //    }
+    }, [busy]);
 
     return (
         <button
