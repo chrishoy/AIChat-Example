@@ -51,16 +51,24 @@ function App() {
     };
 
     return (
-        <div>
-            <h1 id="tableLabel">Ollama Chat...</h1>
-            <p>This component demonstrates the uses of the Ollama AI chat service.</p>
-            <div className="gap=5 grid grid-flow-row">
-                <div>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 p-6">
+            <div className="max-w-4xl mx-auto">
+                <header className="mb-6 text-center">
+                    <h1 className="text-3xl font-bold text-blue-700 mb-2">Ollama Chat</h1>
+                    <p className="text-gray-600">Interact with Ollama AI and explore its capabilities</p>
+                </header>
+                
+                <main className="bg-white rounded-xl shadow-lg p-5 mb-8">
                     <ConversationComponent
                         conversation={conversation ?? undefined}
                         onsubmit={handleSubmitMessage}
-                        busy={awaitingConversation} />
-                </div>
+                        busy={awaitingConversation} 
+                    />
+                </main>
+                
+                <footer className="text-center text-sm text-gray-500">
+                    <p>Using Ollama AI chat service. Format your messages with **bold**, *italic*, and `code`.</p>
+                </footer>
             </div>
         </div>
     );
