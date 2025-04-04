@@ -20,7 +20,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ busy, onsubmit }) => {
           />
           <AnimatedButton
               onClick={() => onsubmit && onsubmit(message)}
-              animationMinPeriod={2000}
               busy={busy}>
               Submit
           </AnimatedButton>

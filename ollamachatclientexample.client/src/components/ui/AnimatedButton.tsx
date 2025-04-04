@@ -12,19 +12,6 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({ busy, children, classNa
 
     useEffect(() => {
         setShowBusy(busy);
-    //    if (busy) {
-    //        setShowBusy(true);
-    //        if (animationMinPeriod > 0) {
-    //            const timeout = setTimeout(() => {
-    //                if (!busy) {
-    //                    setShowBusy(false);
-    //                }
-    //            }, animationMinPeriod);
-    //            return () => clearTimeout(timeout);
-    //        } else {
-    //            setShowBusy(false);
-    //        }
-    //    }
     }, [busy]);
 
     return (
@@ -41,8 +28,9 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({ busy, children, classNa
                 {!showBusy && children}
                 {showBusy && (
                     <span className="flex space-x-1">
-                        <span className="h-2 w-2 animate-pulse rounded bg-red-700 [animation-delay:-0.4s]"></span>
-                        <span className="h-2 w-2 animate-pulse rounded bg-green-700 [animation-delay:-0.2s]"></span>
+                        <span className="h-2 w-2 animate-pulse rounded bg-red-700 [animation-delay:-1.2s]"></span>
+                        <span className="h-2 w-2 animate-pulse rounded bg-green-700 [animation-delay:-0.8s]"></span>
+                        <span className="h-2 w-2 animate-pulse rounded bg-yellow-700 [animation-delay:-0.4s]"></span>
                         <span className="h-2 w-2 animate-pulse rounded bg-blue-700"></span>
                     </span>
                 )}

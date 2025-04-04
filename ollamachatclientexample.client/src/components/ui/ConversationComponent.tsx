@@ -74,15 +74,15 @@ const ConversationComponent: React.FC<ConversationComponentProps> = ({ conversat
     return (
         <div
             ref={containerRef}
-            className="h-128 overflow-y-auto rounded-lg border border-gray-300 bg-gray-100 p-4 flex flex-col"
+            className="flex h-128 flex-col overflow-y-auto rounded-lg border border-gray-300 bg-gray-100 p-4"
         >
-            <div className="flex-grow overflow-y-auto mb-4">
+            <div className="mb-4 flex-grow overflow-y-auto">
                 {conversation?.messages.map((message) => (
                     <div 
                         key={message.id} 
                         className={`mb-3 rounded-lg border p-3 shadow-sm ${getMessageStyle(message.role)}`}
                     >
-                        <div className="flex justify-between items-center mb-1">
+                        <div className="mb-1 flex items-center justify-between">
                             <p className={`font-semibold ${message.role.toLowerCase() === 'assistant' ? 'text-blue-600' : message.role.toLowerCase() === 'user' ? 'text-green-600' : 'text-yellow-600'}`}>
                                 {message.role}
                             </p>
@@ -95,7 +95,7 @@ const ConversationComponent: React.FC<ConversationComponentProps> = ({ conversat
                     </div>)
                 )}
             </div>
-            <div className="flex flex-col space-y-3 p-3 border-t border-gray-200 pt-4 bg-white rounded-lg shadow-sm">
+            <div className="flex flex-col space-y-3 rounded-lg border-t border-gray-200 bg-white p-3 pt-4 shadow-sm">
                 <Textarea
                     hidden={busy}
                     value={message}
@@ -103,7 +103,7 @@ const ConversationComponent: React.FC<ConversationComponentProps> = ({ conversat
                     placeholder="Type your message here... (Use **bold**, *italic*, `code`)"
                     className="w-full min-h-[80px] focus:ring-2 focus:ring-blue-300 transition-all duration-200"
                 />
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                     <p className="text-xs text-gray-500">
                         Formatting: **bold**, *italic*, `code`, ```codeblock```
                     </p>
@@ -115,7 +115,6 @@ const ConversationComponent: React.FC<ConversationComponentProps> = ({ conversat
                                     setMessage("");
                                 }
                             }}
-                            animationMinPeriod={2000}
                             busy={busy}>
                             Submit
                         </AnimatedButton>
