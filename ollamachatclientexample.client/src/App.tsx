@@ -51,14 +51,14 @@ function App() {
     };
 
     return (
-        <div className="bg-gradient-to-br from-blue-50 to-gray-100 p-6">
-            <div className="flex min-h-screen flex-col">
-                <header className="mb-4 text-center">
+        <div className="bg-gradient-to-br min-h-screen from-blue-50 to-gray-100">
+            <div className="mx-auto max-w-4xl">
+                <header className="mb-6 text-center">
                     <h1 className="mb-2 text-3xl font-bold text-blue-700">Ollama Chat</h1>
                     <p className="text-gray-600">Interact with Ollama AI and explore its capabilities</p>
                 </header>
                 
-                <main className="mb-4 rounded-xl bg-white p-3 shadow-lg">
+                <main className="mb-8 rounded-xl bg-white p-5 shadow-lg">
                     <ConversationComponent
                         conversation={conversation ?? undefined}
                         onsubmit={handleSubmitMessage}

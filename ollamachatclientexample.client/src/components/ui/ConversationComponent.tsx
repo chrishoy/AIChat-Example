@@ -74,7 +74,7 @@ const ConversationComponent: React.FC<ConversationComponentProps> = ({ conversat
     return (
         <div
             ref={containerRef}
-            className="flex h-128 flex-col overflow-y-auto rounded-lg border border-gray-300 bg-gray-100 p-4"
+            className="flex min-h-0 flex-1 flex-col overflow-y-auto rounded-lg border border-gray-300 bg-gray-100 p-4"
         >
             <div className="mb-4 flex-grow overflow-y-auto">
                 {conversation?.messages.map((message) => (
